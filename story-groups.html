@@ -9,7 +9,12 @@
                     const subgroupSize = document.getElementById("subgroup-size").value;
                     const nRounds = document.getElementById("n-rounds").value;
 
-                    const roundGroups = buildGroupsForManyRounds(courseSize, subgroupSize, nRounds);
+                    const roundGroups = buildGroupsForManyRounds(
+                        courseSize,
+                        subgroupSize,
+                        nRounds,
+                        true, // shuffle each round
+                    );
                     const outputSection = document.getElementById("output");
                     outputSection.innerHTML = "";
                     var nRound = 1;

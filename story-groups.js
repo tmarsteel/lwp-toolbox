@@ -6,6 +6,15 @@ function* genPairs(iterable) {
     }
 }
 
+function shuffleArrayInPlace(es) {
+    for (let i = 0;i < es.length;i++) {
+        const swapWithIndex = Math.min(Math.floor(Math.random() * es.length), es.length - 1);
+        const tmp = es[i];
+        es[i] = es[swapWithIndex];
+        es[swapWithIndex] = tmp;
+    }
+}
+
 function canonicalizePair({first, second}) {
     const asList = [first, second];
     asList.sort();
@@ -144,6 +153,7 @@ function buildGroupsForManyRounds(
     nParticipantsInCourse,
     nParticipantsPerSubGroup,
     nRounds,
+    shuffleEachRound,
 ) {
     const participants = Array.from({length: nParticipantsInCourse}, (_, index) => "Participant #" + (index + 1));
     const incidence = new IncidenceMap();
@@ -174,6 +184,10 @@ function buildGroupsForManyRounds(
             }
         }
         roundGroups.push(groups);
+
+        if (shuffleEachRound) {
+            shuffleArrayInPlace(participants);
+        }
     }
 
     return roundGroups;
