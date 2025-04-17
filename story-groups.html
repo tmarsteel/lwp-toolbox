@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script src="./story-groups.js" type="text/javascript" async></script>
+        <script type="text/javascript">
+            const scriptEl = document.createElement("script");
+            scriptEl.src = "story-groups.js?" + Math.random();
+            scriptEl.type = "text/javascript";
+            scriptEl.async = true;
+            document.head.appendChild(scriptEl);
+        </script>
         <script type="text/javascript">
             function generateRounds() {
                 try {
