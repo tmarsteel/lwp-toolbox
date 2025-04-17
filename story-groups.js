@@ -69,9 +69,10 @@ class GroupBuilder {
 
 class NoPossibleSolutionError {}
 
-function buildGroups(
+function buildGroupsForSingleRound(
     participants,
     incidence,
+    groupSize,
     max_pair_incidence,
 ) {
     participantPairs = [...genPairs(participants)];
@@ -79,7 +80,7 @@ function buildGroups(
     
     const unassignedMembers = new Set(participants);
     const groups = [];
-    const nGroups = Math.floor(participants.length / 3);
+    const nGroups = Math.floor(participants.length / groupSize);
     
     // prepopulate groups with the least-incidence pairings
     for (let i = 0;i < nGroups;i++) {
@@ -139,36 +140,41 @@ function buildGroups(
     return groups;
 }
 
-const participants = ["Verena", "Tobi", "Frida", "Ray", "Robert", "Jan", "Jannis", "Julius", "Katharina", "Katrin", "Sandra", "Susanne", "Andreas"];
-const incidence = new IncidenceMap();
-const nStories = 7;
+function buildGroupsForManyRounds(
+    nParticipantsInCourse,
+    nParticipantsPerSubGroup,
+    nRounds,
+) {
+    const participants = Array.from({length: nParticipantsInCourse}, (_, index) => "Participant #" + (index + 1));
+    const incidence = new IncidenceMap();
+    const roundGroups = [];
 
-for (let iStory = 0;iStory < nStories;iStory++) {
-    let groups = undefined;
-    let tryMaxPairIncidence = 0;
-    while (true) {
-        try {
-            groups = buildGroups(participants, incidence, tryMaxPairIncidence);
-            break;
-        }
-        catch (e) {
-            if (e instanceof NoPossibleSolutionError && tryMaxPairIncidence < nStories / 2) {
-                tryMaxPairIncidence++;
-                continue;
+    for (let iRound = 0;iRound < nRounds;iRound++) {
+        let groups = undefined;
+        let tryMaxPairIncidence = 0;
+        while (true) {
+            try {
+                groups = buildGroupsForSingleRound(participants, incidence, nParticipantsPerSubGroup, tryMaxPairIncidence);
+                break;
             }
-            throw e;
+            catch (e) {
+                if (e instanceof NoPossibleSolutionError && tryMaxPairIncidence < nRounds / 2) {
+                    tryMaxPairIncidence++;
+                    continue;
+                }
+                throw e;
+            }
         }
+
+        let iGroup = 0;
+        for (let group of groups) {
+            iGroup++;
+            for (let pair of genPairs(group.getMembersList())) {
+                incidence.incrementForPair(pair);
+            }
+        }
+        roundGroups.push(groups);
     }
 
-    console.log(`Story ${iStory + 1}, max pair repeat = ${tryMaxPairIncidence}:`);
-    let iGroup = 0;
-    for (let group of groups) {
-        console.log(`Group ${iGroup + 1}: ${group.getMembersList().join(', ')}`);
-        iGroup++;
-        for (let pair of genPairs(group.getMembersList())) {
-            incidence.incrementForPair(pair);
-        }
-    }
-    console.log("");
-    console.log("");
+    return roundGroups;
 }

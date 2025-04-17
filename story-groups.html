@@ -2,8 +2,58 @@
 <html>
     <head>
         <script src="./story-groups.js" type="text/javascript" async></script>
+        <script type="text/javascript">
+            function generateRounds() {
+                try {
+                    const courseSize = document.getElementById("course-size").value;
+                    const subgroupSize = document.getElementById("subgroup-size").value;
+                    const nRounds = document.getElementById("n-rounds").value;
+
+                    const roundGroups = buildGroupsForManyRounds(courseSize, subgroupSize, nRounds);
+                    const outputSection = document.getElementById("output");
+                    outputSection.innerHTML = "";
+                    var nRound = 1;
+                    for (round of roundGroups) {
+                        const heading = document.createElement("h2");
+                        heading.innerText = "Round " + nRound;
+                        outputSection.appendChild(heading);
+                        nRound++;
+
+                        var nGroup = 1;
+                        for (group of round) {
+                            const groupHeading = document.createElement("h3");
+                            groupHeading.innerText = "Group " + nGroup;
+                            outputSection.appendChild(groupHeading);
+                            nGroup++;
+
+                            const participantsEl = document.createElement("span");
+                            participantsEl.innerText = group.getMembersList().join(", ");
+                            outputSection.appendChild(participantsEl);
+                        }
+                    }
+                }
+                catch (e) {
+                    alert("Error, please report this as a bug :)")
+                    throw e;
+                }
+            }
+        </script>
     </head>
     <body>
-
+        <section>
+            <label for="course-size">Number of participants in the course</label>
+            <input id="course-size" type="number" min="0" step="1" value="12" size="3" />
+            <br>
+            <label for="subgroup-size">Size of the subgroups</label>
+            <input id="subgroup-size" type="number" min="0"0 step="1" value="3" size="3" />
+            <br>
+            <label for="n-rounds">Number of rounds</label>
+            <input id="n-rounds" type="number" min="0" step="1" value="7" size="3" />
+            <br>
+            <button onclick="generateRounds()">generate</button>
+        </section>
+        <hr>
+        <section id="output">
+        </section>
     </body>
 </html>
