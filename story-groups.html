@@ -8,12 +8,13 @@
                     const courseSize = document.getElementById("course-size").value;
                     const subgroupSize = document.getElementById("subgroup-size").value;
                     const nRounds = document.getElementById("n-rounds").value;
+                    const shuffle = document.getElementById("randomize").checked;
 
                     const roundGroups = buildGroupsForManyRounds(
                         courseSize,
                         subgroupSize,
                         nRounds,
-                        true, // shuffle each round
+                        shuffle,
                     );
                     const outputSection = document.getElementById("output");
                     outputSection.innerHTML = "";
@@ -42,7 +43,40 @@
                     throw e;
                 }
             }
+            document.addEventListener("DOMContentLoaded", () => {
+                for (spoiler of document.querySelectorAll(".spoiler")) {
+                    const titleEl = spoiler.querySelector(".spoiler__title");
+                    titleEl.addEventListener("click", (e) => {
+                        spoiler.classList.toggle("spoiler--open");
+                    });
+                }
+            });
         </script>
+        <style>
+            .spoiler {
+                margin: .25em 0;
+                border: 1px solid #2a2a2a;
+                border-radius: .5em;
+                padding: .5em;
+            }
+            .spoiler .spoiler__contents {
+                display: none;
+            }
+            .spoiler.spoiler--open .spoiler__contents {
+                display: initial;
+            }
+            .spoiler__title {
+                cursor: pointer;
+                display: block;
+                margin-bottom: .25em;
+            }
+            .spoiler:not(.spoiler--open) .spoiler__title::before {
+                content: '\2192';
+            }
+            .spoiler.spoiler--open .spoiler__title::before {
+                content: '\2193';
+            }
+        </style>
     </head>
     <body>
         <section>
@@ -55,6 +89,14 @@
             <label for="n-rounds">Number of rounds</label>
             <input id="n-rounds" type="number" min="0" step="1" value="7" size="3" />
             <br>
+            <div class="spoiler">
+                <span class="spoiler__title">fine-tuning</span>
+                <div class="spoiler__contents">
+                    <input type="checkbox" checked id="randomize">
+                    <label for="randomize">randomize output</label>
+                    <br>
+                </div>
+            </div>
             <button onclick="generateRounds()">generate</button>
         </section>
         <hr>
