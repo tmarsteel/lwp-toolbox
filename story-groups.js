@@ -90,6 +90,7 @@ function buildGroupsForSingleRound(
     const unassignedMembers = new Set(participants);
     const groups = [];
     const nGroups = Math.floor(participants.length / groupSize);
+    const maxGroupSize = participants.length % groupSize == 0? groupSize : groupSize + 1;
     
     // prepopulate groups with the least-incidence pairings
     for (let i = 0;i < nGroups;i++) {
@@ -127,6 +128,10 @@ function buildGroupsForSingleRound(
     do {
         nUnassignedBeforeRun = unassignedMembers.size;
         for (let group of groups) {
+            if (group.getNMembers() >= maxGroupSize) {
+                continue;
+            }
+
             for (let potentialMembership of potentialMemberIncidences) {
                 if (potentialMembership.group != group) {
                     continue;
